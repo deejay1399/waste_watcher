@@ -5,6 +5,7 @@ import '../../core/theme.dart';
 import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'rewards_screen.dart';
+import '../my_reports/my_reports_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -138,12 +139,17 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           _MenuItem(
-                            icon: Icons.history_rounded,
-                            label: 'Report History',
+                            icon: Icons.list_alt_rounded,
+                            label: 'My Reports',
                             subtitle: '$totalReports total reports',
                             color: AppTheme.primaryLight,
                             iconColor: AppTheme.primary,
-                            onTap: () {},
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const MyReportsScreen(),
+                              ),
+                            ),
                           ),
                         ],
                       ),

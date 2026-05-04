@@ -73,10 +73,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: AppTheme.primaryLight,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
-                  Icons.recycling_rounded,
-                  color: AppTheme.primary,
-                  size: 30,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Image.asset(
+                    'assets/images/waste_watch_logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
 

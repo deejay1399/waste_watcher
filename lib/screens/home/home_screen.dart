@@ -7,7 +7,6 @@ import '../../models/report_model.dart';
 import '../../services/report_service.dart';
 import '../../widgets/status_badge.dart';
 import '../report/report_step1_screen.dart';
-import '../my_reports/my_reports_screen.dart';
 import '../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
             defaultCenter: _defaultCenter,
             pinColor: _pinColor,
           ),
-          const MyReportsScreen(embedded: true),
           const ProfileScreen(),
         ],
       ),
@@ -102,10 +100,12 @@ class _MapTab extends StatelessWidget {
                   color: AppTheme.primaryLight,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.recycling_rounded,
-                  color: AppTheme.primary,
-                  size: 20,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Image.asset(
+                    'assets/images/waste_watch_logo.png',
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -448,18 +448,11 @@ class _BottomNav extends StatelessWidget {
                 ),
               ),
               _NavItem(
-                icon: Icons.list_alt_outlined,
-                activeIcon: Icons.list_alt_rounded,
-                label: 'My Reports',
-                active: currentIndex == 1,
-                onTap: () => onTap(1),
-              ),
-              _NavItem(
                 icon: Icons.person_outline_rounded,
                 activeIcon: Icons.person_rounded,
                 label: 'Profile',
-                active: currentIndex == 2,
-                onTap: () => onTap(2),
+                active: currentIndex == 1,
+                onTap: () => onTap(1),
               ),
             ],
           ),

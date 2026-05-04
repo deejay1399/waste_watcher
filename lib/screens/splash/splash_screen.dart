@@ -107,10 +107,12 @@ class _SplashScreenState extends State<SplashScreen>
                         width: 1,
                       ),
                     ),
-                    child: const Icon(
-                      Icons.recycling_rounded,
-                      size: 56,
-                      color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Image.asset(
+                        'assets/images/waste_watch_logo.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
