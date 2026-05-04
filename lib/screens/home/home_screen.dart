@@ -8,6 +8,7 @@ import '../../services/report_service.dart';
 import '../../widgets/status_badge.dart';
 import '../report/report_step1_screen.dart';
 import '../my_reports/my_reports_screen.dart';
+import '../profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -49,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             pinColor: _pinColor,
           ),
           const MyReportsScreen(embedded: true),
+          const ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _BottomNav(
@@ -153,6 +155,22 @@ class _MapTab extends StatelessWidget {
           child: StreamBuilder<List<ReportModel>>(
             stream: reportService.getAllReports(),
             builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      'Unable to load map reports\n${snapshot.error}',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                );
+              }
+
               final reports = snapshot.data ?? [];
 
               return Stack(
@@ -400,6 +418,7 @@ class _BottomNav extends StatelessWidget {
         child: SizedBox(
           height: 64,
           child: Row(
+            // Change Row children to:
             children: [
               _NavItem(
                 icon: Icons.map_outlined,
@@ -408,7 +427,6 @@ class _BottomNav extends StatelessWidget {
                 active: currentIndex == 0,
                 onTap: () => onTap(0),
               ),
-              // FAB center
               Expanded(
                 child: Center(
                   child: GestureDetector(
@@ -435,6 +453,13 @@ class _BottomNav extends StatelessWidget {
                 label: 'My Reports',
                 active: currentIndex == 1,
                 onTap: () => onTap(1),
+              ),
+              _NavItem(
+                icon: Icons.person_outline_rounded,
+                activeIcon: Icons.person_rounded,
+                label: 'Profile',
+                active: currentIndex == 2,
+                onTap: () => onTap(2),
               ),
             ],
           ),

@@ -105,6 +105,13 @@ class _MyReportsScreenState extends State<MyReportsScreen>
                   );
                 }
 
+                if (snapshot.hasError) {
+                  return _ReportsError(
+                    message: 'Unable to load reports',
+                    detail: snapshot.error.toString(),
+                  );
+                }
+
                 final all = snapshot.data ?? [];
 
                 if (all.isEmpty) {
@@ -182,6 +189,56 @@ class _MyReportsScreenState extends State<MyReportsScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ReportsError extends StatelessWidget {
+  final String message;
+  final String detail;
+
+  const _ReportsError({required this.message, required this.detail});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFEBEE),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                color: Color(0xFFC62828),
+                size: 36,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A3A1A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              detail,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+          ],
+        ),
       ),
     );
   }

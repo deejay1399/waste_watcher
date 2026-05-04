@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import '../models/report_model.dart';
 
 class ReportService {
@@ -16,7 +17,12 @@ class ReportService {
     required String address,
   }) async {
     try {
-      final user = _auth.currentUser!;
+      final user = _auth.currentUser;
+      if (user == null) {
+        debugPrint('submitReport failed: no signed-in user');
+        return null;
+      }
+
       final docRef = await _db.collection('reports').add({
         'userId': user.uid,
         'userName': user.displayName ?? 'Anonymous',
@@ -32,13 +38,14 @@ class ReportService {
       });
 
       // Award 10 points for submitting
-      await _db.collection('users').doc(user.uid).update({
+      await _db.collection('users').doc(user.uid).set({
         'totalReports': FieldValue.increment(1),
         'totalPoints': FieldValue.increment(10),
-      });
+      }, SetOptions(merge: true));
 
       return docRef.id;
     } catch (e) {
+      debugPrint('submitReport failed: $e');
       return null;
     }
   }
@@ -47,27 +54,29 @@ class ReportService {
   Stream<List<ReportModel>> getAllReports() {
     return _db
         .collection('reports')
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map((d) => ReportModel.fromMap(d.data(), d.id))
-              .toList(),
-        );
+        .map((snap) => _sortNewestFirst(snap.docs));
   }
 
   // Get current user's reports
   Stream<List<ReportModel>> getMyReports() {
-    final uid = _auth.currentUser!.uid;
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return Stream.value([]);
+
     return _db
         .collection('reports')
         .where('userId', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
         .snapshots()
-        .map(
-          (snap) => snap.docs
-              .map((d) => ReportModel.fromMap(d.data(), d.id))
-              .toList(),
-        );
+        .map((snap) => _sortNewestFirst(snap.docs));
+  }
+
+  List<ReportModel> _sortNewestFirst(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+  ) {
+    final reports =
+        docs.map((d) => ReportModel.fromMap(d.data(), d.id)).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return reports;
   }
 }

@@ -1,28 +1,89 @@
-# waste_watcher
+# 🌿 WasteWatcher
 
-A new Flutter project.
+> Watch it. Report it. Clean it.
 
-## Local config
+A community-powered waste reporting and management app built for local governments and barangays in the Philippines.
 
-Cloudinary config is read from Dart environment values:
+---
 
-```sh
-flutter run --dart-define-from-file=config/cloudinary.local.json
+## 📱 Screenshots
+
+| Splash | Home Map | Report | Success | My Reports |
+|--------|----------|--------|---------|------------|
+| _(add screenshots here)_ | | | | |
+
+---
+
+## ✨ Features
+
+### Mobile App (Flutter)
+- 📸 Report waste with photo, GPS location, and waste type
+- 🗺️ Live map showing all reported waste in your area
+- 📋 Track your report status in real time
+- 🏆 Earn points for every report you submit
+- 🔔 Get notified when your report is resolved
+
+### Admin Panel (React + Tailwind) _(coming soon)_
+- 📊 Dashboard with report statistics and map overview
+- ✅ Verify, assign, and resolve reports
+- 👥 Manage cleanup teams and barangay areas
+- 📁 Export reports
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Mobile | Flutter |
+| Auth & Database | Firebase Auth + Firestore |
+| Photo Storage | Cloudinary |
+| Push Notifications | Firebase Cloud Messaging |
+| Admin Panel | React + Tailwind CSS |
+| Admin API | Node.js + Express |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Flutter SDK 3.x
+- Dart 3.x
+- Firebase account
+- Cloudinary free account
+
+### Setup
+
+**1. Clone the repo**
+```bash
+git clone https://github.com/yourusername/waste-watcher.git
+cd waste-watcher
 ```
 
-Create `config/cloudinary.local.json` from `config/cloudinary.example.json` and
-fill in your Cloudinary values.
+**2. Install dependencies**
+```bash
+flutter pub get
+```
 
-## Getting Started
+**3. Configure Firebase**
+```bash
+dart pub global activate flutterfire_cli
+flutterfire configure
+```
 
-This project is a starting point for a Flutter application.
+**4. Configure Cloudinary**
 
-A few resources to get you started if this is your first Flutter project:
+In `lib/services/cloudinary_service.dart`:
+```dart
+static const _cloudName = 'YOUR_CLOUD_NAME';
+static const _uploadPreset = 'YOUR_UPLOAD_PRESET';
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+**5. Run the app**
+```bash
+flutter run
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 📁 Project Structure
