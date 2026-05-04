@@ -4,16 +4,6 @@
 
 A community-powered waste reporting and management app built for local governments and barangays in the Philippines.
 
----
-
-## 📱 Screenshots
-
-| Splash | Home Map | Report | Success | My Reports |
-|--------|----------|--------|---------|------------|
-| _(add screenshots here)_ | | | | |
-
----
-
 ## ✨ Features
 
 ### Mobile App (Flutter)
