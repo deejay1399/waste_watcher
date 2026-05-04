@@ -46,5 +46,6 @@ app.*.map.json
 
 # Local Firebase config values
 firebase.json
-config/firebase.local.json
+config/firebase.json
+config/cloudinary.local.json
 android/app/google-services.json

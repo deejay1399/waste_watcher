@@ -2,6 +2,17 @@
 
 A new Flutter project.
 
+## Local config
+
+Cloudinary config is read from Dart environment values:
+
+```sh
+flutter run --dart-define-from-file=config/cloudinary.local.json
+```
+
+Create `config/cloudinary.local.json` from `config/cloudinary.example.json` and
+fill in your Cloudinary values.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
