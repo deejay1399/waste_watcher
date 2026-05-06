@@ -50,8 +50,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // Navigate after animation
-    Future.delayed(const Duration(milliseconds: 2800), _navigate);
+    Future.delayed(const Duration(milliseconds: 3000), () {
+      if (mounted) _navigate();
+    });
   }
 
   void _navigate() {
@@ -78,93 +79,92 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF1A4A1A), Color(0xFF2D7A2D)],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            children: [
-              const Spacer(flex: 2),
+      backgroundColor: const Color(0xFFF7FAF5), // cream/off-white
+      body: SafeArea(
+        child: Column(
+          children: [
+            const Spacer(flex: 2),
 
-              // Logo
-              ScaleTransition(
-                scale: _scaleAnim,
-                child: FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(28),
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1,
-                      ),
+            // Logo container
+            ScaleTransition(
+              scale: _scaleAnim,
+              child: FadeTransition(
+                opacity: _fadeAnim,
+                child: Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE8F5E8),
+                    borderRadius: BorderRadius.circular(32),
+                    border: Border.all(
+                      color: const Color(0xFF2D7A2D).withOpacity(0.2),
+                      width: 1.5,
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Image.asset(
-                        'assets/images/waste_watch_logo.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Title
-              SlideTransition(
-                position: _slideAnim,
-                child: FadeTransition(
-                  opacity: _fadeAnim,
-                  child: Column(
-                    children: [
-                      const Text(
-                        'WasteWatcher',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          letterSpacing: -1,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Watch it. Report it. Clean it.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.white.withOpacity(0.75),
-                          fontWeight: FontWeight.w500,
-                          letterSpacing: 0.5,
-                        ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF2D7A2D).withOpacity(0.12),
+                        blurRadius: 24,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Image.asset(
+                      'assets/images/waste_watch_logo.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
+            ),
 
-              const Spacer(flex: 3),
+            const SizedBox(height: 32),
 
-              // Loading dots
-              FadeTransition(
+            // Title + tagline
+            SlideTransition(
+              position: _slideAnim,
+              child: FadeTransition(
                 opacity: _fadeAnim,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(3, (i) => _Dot(delay: i * 200)),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Waste Watcher',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A3A1A),
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Watch it. Report it. Clean it.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: const Color(0xFF2D7A2D).withOpacity(0.8),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+            ),
 
-              const SizedBox(height: 48),
-            ],
-          ),
+            const Spacer(flex: 3),
+
+            // Loading dots
+            FadeTransition(
+              opacity: _fadeAnim,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(3, (i) => _Dot(delay: i * 200)),
+              ),
+            ),
+
+            const SizedBox(height: 48),
+          ],
         ),
       ),
     );
@@ -208,14 +208,14 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       child: FadeTransition(
         opacity: _anim,
         child: Container(
-          width: 6,
-          height: 6,
+          width: 7,
+          height: 7,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Color(0xFF2D7A2D),
             shape: BoxShape.circle,
           ),
         ),

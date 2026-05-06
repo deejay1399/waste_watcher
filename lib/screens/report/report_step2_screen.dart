@@ -60,8 +60,18 @@ class _ReportStep2ScreenState extends State<ReportStep2Screen> {
       final placemarks = await placemarkFromCoordinates(_lat, _lng);
       if (placemarks.isNotEmpty) {
         final p = placemarks.first;
-        _address =
-            '${p.street ?? ''}, ${p.subLocality ?? ''}, ${p.locality ?? ''}';
+        // Build address with all components for Philippine addresses
+        final parts = <String>[];
+        if (p.street?.isNotEmpty ?? false) parts.add(p.street!);
+        if (p.subLocality?.isNotEmpty ?? false)
+          parts.add(p.subLocality!); // Barangay
+        if (p.locality?.isNotEmpty ?? false)
+          parts.add(p.locality!); // City/Municipality
+        if (p.administrativeArea?.isNotEmpty ?? false)
+          parts.add(p.administrativeArea!); // Province
+
+        _address = parts.join(', ');
+        if (_address.isEmpty) _address = 'Location detected';
       }
     } catch (_) {
       _address = 'Location unavailable';
@@ -285,7 +295,12 @@ class _ReportStep2ScreenState extends State<ReportStep2Screen> {
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+            padding: EdgeInsets.fromLTRB(
+              20,
+              0,
+              20,
+              32 + MediaQuery.of(context).padding.bottom,
+            ),
             child: CustomButton(
               label: 'Next — Review',
               onTap: _loadingLocation

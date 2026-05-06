@@ -29,8 +29,9 @@ class _ReportStep1ScreenState extends State<ReportStep1Screen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      useSafeArea: true,
       builder: (_) => Container(
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.fromLTRB(16, 16, 16, 80),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
@@ -93,7 +94,7 @@ class _ReportStep1ScreenState extends State<ReportStep1Screen> {
           const _Stepper(current: 0),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -256,7 +257,12 @@ class _ReportStep1ScreenState extends State<ReportStep1Screen> {
 
           // Next button
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+            padding: EdgeInsets.fromLTRB(
+              20,
+              16,
+              20,
+              16 + MediaQuery.of(context).padding.bottom,
+            ),
             child: CustomButton(
               label: 'Next — Add Details',
               onTap: _photo == null

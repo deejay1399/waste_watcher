@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../core/theme.dart';
 import '../../models/report_model.dart';
 import '../../services/report_service.dart';
+import '../../services/notification_service.dart';
 import '../../widgets/status_badge.dart';
 import '../report/report_step1_screen.dart';
 import '../profile/profile_screen.dart';
+import '../notifications/notifications_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,8 +24,41 @@ class _HomeScreenState extends State<HomeScreen> {
   final _reportService = ReportService();
   final _mapController = MapController();
 
-  // Default center: Mabini, Central Visayas PH
-  final _defaultCenter = const LatLng(9.8483, 124.0532);
+  // Fallback: Mabini, Central Visayas
+  LatLng _userLocation = const LatLng(9.8483, 124.0532);
+  bool _locationLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    NotificationService.listenToReportChanges();
+    _getUserLocation();
+  }
+
+  Future<void> _getUserLocation() async {
+    try {
+      LocationPermission perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.deniedForever) return;
+
+      final pos = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _userLocation = LatLng(pos.latitude, pos.longitude);
+        _locationLoaded = true;
+      });
+
+      // Move map to user's location
+      _mapController.move(_userLocation, 15);
+    } catch (_) {
+      // Falls back to default silently
+    }
+  }
 
   Color _pinColor(String status) {
     switch (status) {
@@ -45,7 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
           _MapTab(
             reportService: _reportService,
             mapController: _mapController,
-            defaultCenter: _defaultCenter,
+            defaultCenter: _userLocation,
+            userLocation: _userLocation,
+            locationLoaded: _locationLoaded,
             pinColor: _pinColor,
           ),
           const ProfileScreen(),
@@ -67,12 +105,16 @@ class _MapTab extends StatelessWidget {
   final ReportService reportService;
   final MapController mapController;
   final LatLng defaultCenter;
+  final LatLng userLocation;
+  final bool locationLoaded;
   final Color Function(String) pinColor;
 
   const _MapTab({
     required this.reportService,
     required this.mapController,
     required this.defaultCenter,
+    required this.userLocation,
+    required this.locationLoaded,
     required this.pinColor,
   });
 
@@ -114,7 +156,7 @@ class _MapTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'WasteWatcher',
+                      'Waste Watcher',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -132,19 +174,61 @@ class _MapTab extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.green.shade100),
-                ),
-                child: const Icon(
-                  Icons.notifications_outlined,
-                  color: Color(0xFF1A3A1A),
-                  size: 20,
-                ),
+              StreamBuilder<int>(
+                stream: NotificationService.getUnreadCount(),
+                builder: (context, snapshot) {
+                  final unreadCount = snapshot.data ?? 0;
+                  return Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const NotificationsScreen(),
+                          ),
+                        ),
+                        child: Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.green.shade100),
+                          ),
+                          child: const Icon(
+                            Icons.notifications_outlined,
+                            color: Color(0xFF1A3A1A),
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      if (unreadCount > 0)
+                        Positioned(
+                          top: -4,
+                          right: -4,
+                          child: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(50),
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: Center(
+                              child: Text(
+                                unreadCount > 9 ? '9+' : unreadCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -179,7 +263,7 @@ class _MapTab extends StatelessWidget {
                     mapController: mapController,
                     options: MapOptions(
                       initialCenter: defaultCenter,
-                      initialZoom: 14,
+                      initialZoom: 15,
                     ),
                     children: [
                       TileLayer(
@@ -187,6 +271,8 @@ class _MapTab extends StatelessWidget {
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'com.wastewatcher.app',
                       ),
+
+                      // Waste report pins
                       MarkerLayer(
                         markers: reports
                             .map(
@@ -216,6 +302,40 @@ class _MapTab extends StatelessWidget {
                             )
                             .toList(),
                       ),
+
+                      // User location blue dot
+                      if (locationLoaded)
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: userLocation,
+                              width: 48,
+                              height: 48,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.shade600,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 3,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.4),
+                                      blurRadius: 8,
+                                      spreadRadius: 2,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.person_pin_circle_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
 
@@ -283,6 +403,35 @@ class _MapTab extends StatelessWidget {
                             ),
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+
+                  // My location button
+                  Positioned(
+                    bottom: 80,
+                    right: 12,
+                    child: GestureDetector(
+                      onTap: () => mapController.move(userLocation, 15),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.green.shade100),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.my_location_rounded,
+                          color: Colors.blue.shade600,
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),
@@ -418,7 +567,6 @@ class _BottomNav extends StatelessWidget {
         child: SizedBox(
           height: 64,
           child: Row(
-            // Change Row children to:
             children: [
               _NavItem(
                 icon: Icons.map_outlined,

@@ -6,6 +6,9 @@ import '../../services/auth_service.dart';
 import '../auth/login_screen.dart';
 import 'rewards_screen.dart';
 import '../my_reports/my_reports_screen.dart';
+import '../notifications/notifications_screen.dart';
+import 'help_center_screen.dart';
+import 'about_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -163,7 +166,12 @@ class ProfileScreen extends StatelessWidget {
                             subtitle: 'Manage your alerts',
                             color: const Color(0xFFE3F2FD),
                             iconColor: const Color(0xFF1565C0),
-                            onTap: () {},
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const NotificationsScreen(),
+                              ),
+                            ),
                           ),
                           _MenuItem(
                             icon: Icons.help_outline_rounded,
@@ -171,15 +179,25 @@ class ProfileScreen extends StatelessWidget {
                             subtitle: 'FAQs and support',
                             color: const Color(0xFFF3E5F5),
                             iconColor: const Color(0xFF6A1B9A),
-                            onTap: () {},
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const HelpCenterScreen(),
+                              ),
+                            ),
                           ),
                           _MenuItem(
                             icon: Icons.info_outline_rounded,
-                            label: 'About WasteWatcher',
-                            subtitle: 'Version 1.0.0',
+                            label: 'About Waste Watcher',
+                            subtitle: 'Version 0.9.0',
                             color: AppTheme.primaryLight,
                             iconColor: AppTheme.primary,
-                            onTap: () {},
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AboutScreen(),
+                              ),
+                            ),
                           ),
                         ],
                       ),

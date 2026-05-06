@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Waste Watcher",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define-from-file=config/firebase.json",
+                "--dart-define-from-file=config/cloudinary.local.json"
+            ]
+        }
+    ]
+}

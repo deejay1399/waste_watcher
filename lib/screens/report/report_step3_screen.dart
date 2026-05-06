@@ -232,7 +232,12 @@ class _ReportStep3ScreenState extends State<ReportStep3Screen> {
           ),
 
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+            padding: EdgeInsets.fromLTRB(
+              20,
+              0,
+              20,
+              32 + MediaQuery.of(context).padding.bottom,
+            ),
             child: CustomButton(
               label: 'Submit Report',
               loading: _submitting,
